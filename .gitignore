@@ -18,7 +18,7 @@ keyring-*
 vendor/
 *.account
 .go.mod.bak
-
+tmp_daemon_storage/
 # VS Code
 .history/
 .vscode/

@@ -173,6 +173,8 @@ import (
 	triggertypes "github.com/provenance-io/provenance/x/trigger/types"
 
 	_ "github.com/provenance-io/provenance/client/docs/statik" // registers swagger-ui files with statik
+
+	"github.com/provenance-io/provenance/mamoru_cosmos_sdk"
 )
 
 var (
@@ -1095,6 +1097,13 @@ func New(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	app.ScopedICQKeeper = scopedICQKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
+
+	////////////////////////// MAMORU SNIFFER //////////////////////////
+	listener := mamoru_cosmos_sdk.NewStreamingService(logger, mamoru_cosmos_sdk.NewSniffer(logger))
+	streamingManager := storetypes.StreamingManager{AbciListeners: []storetypes.ABCIListener{listener}}
+
+	bApp.SetStreamingManager(streamingManager)
+	////////////////////////// MAMORU SNIFFER //////////////////////////
 
 	return app
 }

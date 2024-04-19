@@ -82,7 +82,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
-	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -207,3 +206,11 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 
 // TODO: This is also required for https://github.com/provenance-io/provenance/issues/1414
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.30.0-pio-7
+
+require (
+	github.com/Mamoru-Foundation/mamoru-sniffer-go v0.13.0
+	github.com/go-kit/log v0.2.1
+	gotest.tools/v3 v3.5.1
+)
+
+//replace github.com/Mamoru-Foundation/mamoru-sniffer-go => ../mamoru-sniffer-go
