@@ -5,12 +5,13 @@ WORKDIR /go/src/github.com/provenance-io/provenance
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y libleveldb-dev
+    apt-get install -y libleveldb-dev make
 
 COPY client/ ./client/
 COPY app/ ./app/
 COPY go.* ./
 COPY cmd/ ./cmd/
+COPY mamoru_cosmos_sdk/ ./mamoru_cosmos_sdk/
 COPY internal/ ./internal/
 COPY x/ ./x/
 COPY vendor/ ./vendor/
@@ -23,12 +24,8 @@ COPY Makefile sims.mk ./
 # Build and install provenanced
 ENV VERSION=$VERSION
 RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" != "x86_64" ] && [ "$ARCH" != "aarch64" ]; then \
-        echo "Unsupported architecture (required: x86_64 or aarch64): $ARCH"; \
-        exit 1; \
-    fi && \
     echo "Building and installing provenance for Arch: $ARCH"; \
-    make VERSION=${VERSION} install
+    make VERSION=$VERSION install
 
 ###
 FROM debian:bullseye-slim as run
@@ -38,16 +35,12 @@ RUN apt-get update && \
     apt-get install -y curl jq libleveldb-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/
-    
+
 
 COPY --from=build /go/src/github.com/provenance-io/provenance/vendor/github.com/CosmWasm/wasmvm/internal/api/libwasmvm.*.so /tmp
 COPY --from=build /go/bin/provenanced /usr/bin/provenanced
 
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" != "x86_64" ] && [ "$ARCH" != "aarch64" ]; then \
-        echo "Unsupported architecture (required: x86_64 or aarch64): $ARCH"; \
-        exit 1; \
-    fi && \
+RUN ARCH=$(uname -m)  && \
     cp /tmp/libwasmvm.$ARCH.so /usr/local/lib/. && \
     rm /tmp/libwasmvm.*.so
 
