@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/provenance-io/provenance/mamoru_cosmos_sdk"
 	"io"
 	"io/fs"
 	"net/http"
@@ -997,6 +998,14 @@ func New(
 	}
 
 	simappparams.AppEncodingConfig = app.GetEncodingConfig()
+
+	////////////////////////// MAMORU SNIFFER //////////////////////////
+	listener := mamoru_cosmos_sdk.NewStreamingService(logger, mamoru_cosmos_sdk.NewSniffer(logger))
+	streamingManager := storetypes.StreamingManager{ABCIListeners: []storetypes.ABCIListener{listener}, StopNodeOnErr: false}
+
+	bApp.SetStreamingManager(streamingManager)
+	////////////////////////// MAMORU SNIFFER //////////////////////////
+
 	return app
 }
 
