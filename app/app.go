@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/provenance-io/provenance/mamoru_cosmos_sdk"
 	"io"
 	"io/fs"
 	"net/http"
@@ -186,8 +187,6 @@ import (
 	triggerkeeper "github.com/provenance-io/provenance/x/trigger/keeper"
 	triggermodule "github.com/provenance-io/provenance/x/trigger/module"
 	triggertypes "github.com/provenance-io/provenance/x/trigger/types"
-
-	"github.com/provenance-io/provenance/mamoru_cosmos_sdk"
 )
 
 var (
@@ -999,6 +998,14 @@ func New(
 	}
 
 	simappparams.AppEncodingConfig = app.GetEncodingConfig()
+
+	////////////////////////// MAMORU SNIFFER //////////////////////////
+	listener := mamoru_cosmos_sdk.NewStreamingService(logger, mamoru_cosmos_sdk.NewSniffer(logger))
+	streamingManager := storetypes.StreamingManager{ABCIListeners: []storetypes.ABCIListener{listener}, StopNodeOnErr: false}
+
+	bApp.SetStreamingManager(streamingManager)
+	////////////////////////// MAMORU SNIFFER //////////////////////////
+
 	return app
 }
 
@@ -1084,27 +1091,6 @@ func (app *App) registerUpgradeHandlers(appOpts servertypes.AppOptions) {
 	// Verify configuration settings
 	storeLoader = ValidateWrapper(app.Logger(), appOpts, storeLoader)
 	app.SetStoreLoader(storeLoader)
-
-	if loadLatest {
-		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
-		}
-	}
-
-	app.ScopedIBCKeeper = scopedIBCKeeper
-	app.ScopedTransferKeeper = scopedTransferKeeper
-	app.ScopedICQKeeper = scopedICQKeeper
-	app.ScopedICAHostKeeper = scopedICAHostKeeper
-
-	////////////////////////// MAMORU SNIFFER //////////////////////////
-	listener := mamoru_cosmos_sdk.NewStreamingService(logger, mamoru_cosmos_sdk.NewSniffer(logger))
-	streamingManager := storetypes.StreamingManager{AbciListeners: []storetypes.ABCIListener{listener}}
-
-	bApp.SetStreamingManager(streamingManager)
-	////////////////////////// MAMORU SNIFFER //////////////////////////
-
-
-	return app
 }
 
 // GetBaseApp returns the base cosmos app

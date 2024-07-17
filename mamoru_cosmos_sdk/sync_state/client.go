@@ -2,6 +2,7 @@ package sync_state
 
 import (
 	"context"
+	"cosmossdk.io/log"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,8 +12,6 @@ import (
 	"strconv"
 	"syscall"
 	"time"
-
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 type JSONRPCResponse struct {

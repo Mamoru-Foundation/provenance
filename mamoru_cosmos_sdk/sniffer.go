@@ -1,15 +1,11 @@
 package mamoru_cosmos_sdk
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
 
-	"github.com/go-kit/log/level"
-	"github.com/go-kit/log/term"
-	"github.com/tendermint/tendermint/libs/log"
-
+	"cosmossdk.io/log"
 	"github.com/Mamoru-Foundation/mamoru-sniffer-go/mamoru_sniffer"
 	"github.com/Mamoru-Foundation/mamoru-sniffer-go/mamoru_sniffer/cosmos"
 	"github.com/provenance-io/provenance/mamoru_cosmos_sdk/sync_state"
@@ -30,28 +26,19 @@ func init() {
 	mamoru_sniffer.InitLogger(func(entry mamoru_sniffer.LogEntry) {
 		kvs := mapToInterfaceSlice(entry.Ctx)
 		msg := "Mamoru core: " + entry.Message
-		var tmLogger = log.NewTMLoggerWithColorFn(os.Stdout, func(keyvals ...interface{}) term.FgBgColor {
-			if keyvals[0] != level.Key() {
-				panic(fmt.Sprintf("expected level key to be first, got %v", keyvals[0]))
-			}
-			switch keyvals[1].(level.Value).String() {
-			case "debug":
-				return term.FgBgColor{Fg: term.Green}
-			case "error":
-				return term.FgBgColor{Fg: term.DarkRed}
-			default:
-				return term.FgBgColor{}
-			}
-		})
+		var tmLogger = log.NewLogger(os.Stdout, log.TraceOption(true), log.ColorOption(false))
 
 		switch entry.Level {
 		case mamoru_sniffer.LogLevelDebug:
+
 			tmLogger.Debug(msg, kvs...)
 		case mamoru_sniffer.LogLevelInfo:
+
 			tmLogger.Info(msg, kvs...)
 		case mamoru_sniffer.LogLevelWarning:
-			tmLogger.With("Warn").Error(msg, kvs...)
+			tmLogger.Warn(msg, kvs...)
 		case mamoru_sniffer.LogLevelError:
+
 			tmLogger.Error(msg, kvs...)
 		}
 	})

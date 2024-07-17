@@ -1,19 +1,19 @@
 package mamoru_cosmos_sdk
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
-	"gotest.tools/v3/assert"
+	log2 "cosmossdk.io/log"
 	"os"
 	"testing"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gotest.tools/v3/assert"
 )
 
 // TestNewSniffer tests the NewSniffer function
 func TestNewSniffer(t *testing.T) {
-	snifferTest := NewSniffer(log.NewTMLogger(log.NewSyncWriter(os.Stdout)))
+	snifferTest := NewSniffer(log2.NewLogger(os.Stdout, log2.TraceOption(true), log2.ColorOption(false)))
 	if snifferTest == nil {
 		t.Error("NewSniffer returned nil")
 	}
@@ -24,7 +24,7 @@ func TestIsSnifferEnable(t *testing.T) {
 
 	// Set environment variable for testing
 	t.Setenv("MAMORU_SNIFFER_ENABLE", "true")
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+	logger := log2.NewLogger(os.Stdout, log2.TraceOption(true), log2.ColorOption(false))
 	_ = NewSniffer(logger)
 	if !isSnifferEnabled() {
 		t.Error("Expected sniffer to be enabled")
@@ -39,7 +39,7 @@ func TestIsSnifferEnable(t *testing.T) {
 
 // smoke test for the sniffer
 func TestSnifferSmoke(t *testing.T) {
-	t.Skip()
+
 	t.Setenv("MAMORU_SNIFFER_ENABLE", "true")
 	t.Setenv("MAMORU_CHAIN_TYPE", "ETH_TESTNET")
 	t.Setenv("MAMORU_CHAIN_ID", "validationchain")
@@ -49,7 +49,7 @@ func TestSnifferSmoke(t *testing.T) {
 	//InitConnectFunc(func() (*cosmos.SnifferCosmos, error) {
 	//	return nil, nil
 	//})
-	logger := log.TestingLogger()
+	logger := log2.NewLogger(os.Stdout, log2.TraceOption(true), log2.ColorOption(false))
 	sniffer := NewSniffer(logger)
 	if sniffer == nil {
 		t.Error("NewSniffer returned nil")
@@ -59,17 +59,9 @@ func TestSnifferSmoke(t *testing.T) {
 	ctx := sdk.NewContext(nil, header, ischeck, logger)
 
 	streamingService := NewStreamingService(logger, sniffer)
-	regBB := abci.RequestBeginBlock{}
-	resBB := abci.ResponseBeginBlock{}
-	err := streamingService.ListenBeginBlock(ctx, regBB, resBB)
-	assert.NilError(t, err)
-	regDT := abci.RequestDeliverTx{}
-	resDT := abci.ResponseDeliverTx{}
-	err = streamingService.ListenDeliverTx(ctx, regDT, resDT)
-	assert.NilError(t, err)
-	regEB := abci.RequestEndBlock{}
-	resEB := abci.ResponseEndBlock{}
-	err = streamingService.ListenEndBlock(ctx, regEB, resEB)
+	regBB := abci.RequestFinalizeBlock{}
+	resBB := abci.ResponseFinalizeBlock{}
+	err := streamingService.ListenFinalizeBlock(ctx, regBB, resBB)
 	assert.NilError(t, err)
 
 	resC := abci.ResponseCommit{}

@@ -2,13 +2,14 @@ package sync_state
 
 import (
 	"context"
+	"cosmossdk.io/log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 var mockSyncStatusResponse = `{
@@ -55,7 +56,7 @@ var mockSyncStatusResponse = `{
 }`
 
 func TestNewHTTPRequest(t *testing.T) {
-	logger := log.NewNopLogger()
+	logger := log.NewLogger(os.Stdout, log.TraceOption(true), log.ColorOption(false))
 	client := NewHTTPRequest(logger, "http://localhost", 10, true)
 	assert.NotNil(t, client)
 }
