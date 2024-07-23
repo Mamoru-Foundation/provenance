@@ -208,7 +208,7 @@ replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.30.0-pio-7
 
 require (
-	github.com/Mamoru-Foundation/mamoru-sniffer-go v0.13.5
+	github.com/Mamoru-Foundation/mamoru-sniffer-go v0.13.6
 	github.com/go-kit/log v0.2.1
 	gotest.tools/v3 v3.5.1
 )
