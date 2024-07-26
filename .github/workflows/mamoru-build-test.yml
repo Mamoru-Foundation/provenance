@@ -20,14 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: technote-space/get-diff-action@v6.1.2
-      with:
-        PATTERNS: |
-          **/**.go
-          go.mod
-          go.sum
-          .github/workflows/lint.yml
-          scripts/no-now-lint.sh
     - uses: actions/setup-go@v5
       with:
         go-version: '1.20'
