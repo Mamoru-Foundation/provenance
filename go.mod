@@ -233,6 +233,6 @@ replace (
 )
 
 require (
-	github.com/Mamoru-Foundation/mamoru-sniffer-go v0.13.6
+	github.com/Mamoru-Foundation/mamoru-sniffer-go v0.13.7
 	gotest.tools/v3 v3.5.1
 )
